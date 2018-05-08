@@ -1,4 +1,4 @@
-# AdOn Encrypt
+# AdOn Mailer
 
 A simple transactional mailer for user signup and password reset with nodemailer and a custom pug template, promisified with bluebird
 
