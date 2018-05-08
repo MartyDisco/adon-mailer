@@ -27,7 +27,7 @@ class Mailer {
 
     userTransaction(options) {
 		options = {
-			url: `${this.protocol}://${this.domain}/`
+			url: `${this.protocol}://${this.domain}`
 			, logo: this.logo
 			, app: this.app
 			, query: `?email=${options.user.email}&token=${options.user.token}`
@@ -50,32 +50,27 @@ class Mailer {
     }
 
     configWelcomeEmail(options) {
+		options.mail.subject = `[${this.app}] ${this.i18n.$t('Activate your account', options.lang)}`
         return {
-			redirect: `${options.url}login/`
-			, header: `${this.i18n.$t('Welcome to', options.lang)} ${this.title}`
+			redirect: `${options.url}/login/`
+			, header: `${this.i18n.$t('Welcome to', options.lang)} ${this.app}`
 			, title: this.i18n.$t('Congratulations !', options.lang)
 			, text: this.i18n.$t('You are just one click to activate your account.', options.lang)
 			, callToAction: this.i18n.$t('Activate', options.lang)
-			, mail: {
-				subject: `[${this.domain}] ${this.i18n.$t('Activate your account', options.lang)}`
-				, ...options.mail
-			}
 			, ...options
 		}
     }
 
     configResetEmail(options) {
         const endText = `${this.app} ${this.i18n.$t('account password.', options.lang)}`
+		options.mail.subject = `[${this.app}] ${this.i18n.$t('Reset your Password', options.lang)}`
         return {
-			redirect: `${options.url}reset/`
+			redirect: `${options.url}/reset/`
 			, header: this.i18n.$t('Password Reset', options.lang)
 			, title: this.i18n.$t('Forgot your password ?', options.lang)
 			, text: `${this.i18n.$t('Click on the button to reset your', options.lang)} ${endText}`
 			, callToAction: this.i18n.$t('Reset', options.lang)
-			, mail: {
-				subject: `[${this.app}] ${this.i18n.$t('Reset your Password', options.lang)}`
-				, ...options.mail
-			}
+			, ...options
 		}
     }
 
