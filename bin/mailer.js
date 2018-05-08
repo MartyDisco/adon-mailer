@@ -58,7 +58,7 @@ var Mailer = function () {
 		this.sender = options.user;
 		this.i18n = new _adonI18n2.default(options.locales || _locales2.default);
 		this.template = function (data) {
-			return _pug2.default.renderFile(options.template || '../src/template.pug', data, null);
+			return _pug2.default.renderFile(options.template || __dirname + '/../src/template.pug', data, null);
 		};
 	}
 

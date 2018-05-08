@@ -22,7 +22,7 @@ class Mailer {
 		this.logo = options.logo || null
 		this.sender = options.user
 		this.i18n = new I18n(options.locales || locales)
-		this.template = data => pug.renderFile(options.template || '../src/template.pug', data, null)
+		this.template = data => pug.renderFile(options.template || `${__dirname}/../src/template.pug`, data, null)
 	}
 
     userTransaction(options) {
