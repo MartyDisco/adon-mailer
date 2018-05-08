@@ -2,7 +2,7 @@
 	"name": "adon-mailer",
 	"version": "1.0.0",
 	"license": "MIT",
-	"author": "Martin PARENT <mparent@adon-immo.com>",
+	"author": "Martin PARENT <mparent@adon-immo.com> (https://adon-immo.com)",
 	"description": "A simple transactionnal mailer for user signup and password reset with nodemailer and a custom pug template, promisified with bluebird",
 	"keywords": [
 		"simple",
@@ -13,6 +13,10 @@
 		"user",
 		"signup"
 	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/MartyDisco/adon-mailer.git"
+	},
 	"main": "bin/mailer.js",
 	"scripts": {
 		"transpile": "babel src/mailer.mjs -o bin/mailer.js",

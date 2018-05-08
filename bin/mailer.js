@@ -32,6 +32,10 @@ var _pug = require('pug');
 
 var _pug2 = _interopRequireDefault(_pug);
 
+var _locales = require('../src/locales.json');
+
+var _locales2 = _interopRequireDefault(_locales);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -52,7 +56,7 @@ var Mailer = function () {
 		this.app = options.app ? options.app : 'Application';
 		this.logo = options.logo || null;
 		this.sender = options.user;
-		this.i18n = new _adonI18n2.default(options.locales || {});
+		this.i18n = new _adonI18n2.default(options.locales || _locales2.default);
 		this.template = function (data) {
 			return _pug2.default.renderFile(options.template || '../src/template.pug', data, null);
 		};
@@ -68,7 +72,7 @@ var Mailer = function () {
 				logo: this.logo,
 				app: this.app,
 				query: '?email=' + options.user.email + '&token=' + options.user.token,
-				mail: { from: this.title + ' <' + this.sender + '>', to: options.user.email }
+				mail: { from: this.app + ' <' + this.sender + '>', to: options.user.email }
 			}, options);
 			return new _bluebird2.default(function (resolve, reject) {
 				var emailConfig = void 0;
@@ -80,7 +84,7 @@ var Mailer = function () {
 						emailConfig = _this.configResetEmail(options);
 						break;
 					default:
-						return reject(_this.i18n.$t('User is not allowed to receive email', options.locale));
+						return reject(_this.i18n.$t('User is not allowed to receive email', options.lang));
 				}
 				return _this.buildEmailAndSend(emailConfig).then(function (info) {
 					return resolve(info);
@@ -94,27 +98,27 @@ var Mailer = function () {
 		value: function configWelcomeEmail(options) {
 			return _extends({
 				redirect: options.url + 'login/',
-				header: this.i18n.$t('Welcome to', options.locale) + ' ' + this.title,
-				title: this.i18n.$t('Congratulations !', options.locale),
-				text: this.i18n.$t('You are just one click to activate your account.', options.locale),
-				callToAction: this.i18n.$t('Activate', options.locale),
+				header: this.i18n.$t('Welcome to', options.lang) + ' ' + this.title,
+				title: this.i18n.$t('Congratulations !', options.lang),
+				text: this.i18n.$t('You are just one click to activate your account.', options.lang),
+				callToAction: this.i18n.$t('Activate', options.lang),
 				mail: _extends({
-					subject: '[' + this.domain + '] ' + this.i18n.$t('Activate your account', options.locale)
+					subject: '[' + this.domain + '] ' + this.i18n.$t('Activate your account', options.lang)
 				}, options.mail)
 			}, options);
 		}
 	}, {
 		key: 'configResetEmail',
 		value: function configResetEmail(options) {
-			var endText = this.app + ' ' + this.i18n.$t('account password.', options.locale);
+			var endText = this.app + ' ' + this.i18n.$t('account password.', options.lang);
 			return {
 				redirect: options.url + 'reset/',
-				header: this.i18n.$t('Password Reset', options.locale),
-				title: this.i18n.$t('Forgot your password ?', options.locale),
-				text: this.i18n.$t('Click on the button to reset your', options.locale) + ' ' + endText,
-				callToAction: this.i18n.$t('Reset', options.locale),
+				header: this.i18n.$t('Password Reset', options.lang),
+				title: this.i18n.$t('Forgot your password ?', options.lang),
+				text: this.i18n.$t('Click on the button to reset your', options.lang) + ' ' + endText,
+				callToAction: this.i18n.$t('Reset', options.lang),
 				mail: _extends({
-					subject: '[' + this.app + '] ' + this.i18n.$t('Reset your Password', options.locale)
+					subject: '[' + this.app + '] ' + this.i18n.$t('Reset your Password', options.lang)
 				}, options.mail)
 			};
 		}
