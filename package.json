@@ -1,0 +1,42 @@
+{
+	"name": "adon-mailer",
+	"version": "1.0.0",
+	"license": "MIT",
+	"author": "Martin PARENT <mparent@adon-immo.com>",
+	"description": "A simple transactionnal mailer for user signup and password reset with nodemailer and a custom pug template, promisified with bluebird",
+	"keywords": [
+		"simple",
+		"mailer",
+		"template",
+		"promise",
+		"transactional",
+		"user",
+		"signup"
+	],
+	"main": "bin/mailer.js",
+	"scripts": {
+		"transpile": "babel src/mailer.mjs -o bin/mailer.js",
+		"lint": "eslint . --ext js, mjs, vue || true"
+	},
+	"dependencies": {
+		"adon-i18n": "^1.0.1",
+		"bluebird": "^3.5.1",
+		"foundation-emails": "^2.2.1",
+		"html-minifier": "^3.5.15",
+		"juice": "^4.2.3",
+		"nodemailer": "^4.6.4",
+		"pug": "^2.0.3"
+	},
+	"devDependencies": {
+		"babel-cli": "^6.26.0",
+		"babel-core": "^6.26.0",
+		"babel-plugin-add-module-exports": "^0.2.1",
+		"babel-preset-es2015": "^6.24.1",
+		"babel-preset-stage-2": "^6.24.1",
+		"eslint": "^4.18.1",
+		"eslint-config-airbnb-base": "^12.1.0",
+		"eslint-plugin-import": "^2.9.0",
+		"eslint-plugin-node": "^6.0.1",
+		"eslint-plugin-promise": "^3.7.0"
+	}
+}

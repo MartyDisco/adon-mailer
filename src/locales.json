@@ -1,0 +1,30 @@
+{
+	"en": {
+		"User is not allowed to receive email": "User is not allowed to receive email",
+		"Welcome to": "Welcome to",
+		"Congratulations !": "Congratulations !",
+		"You are just one click to activate your account.": "You are just one click to activate your account.",
+		"Activate": "Activate",
+		"Activate your account": "Activate your account",
+		"Password Reset": "Password Reset",
+		"Forgot your password ?": "Forgot your password ?",
+		"Click on the button to reset your": "Click on the button to reset your",
+		"account password.": "account password.",
+		"Reset": "Reset",
+		"Reset your Password": "Reset your Password"
+	},
+	"fr": {
+		"User is not allowed to receive email": "L'utilisateur n'est pas autorisé à recevoir des emails",
+		"Welcome to": "Bienvenue sur",
+		"Congratulations !": "Félicitations !",
+		"You are just one click to activate your account.": "Vous n'êtes plus qu'à un clic d'activer votre compte.",
+		"Activate": "Activer",
+		"Activate your account": "Activer votre compte",
+		"Password Reset": "Redéfinition de mot de passe",
+		"Forgot your password ?": "Vous avez oublié votre mot de passe ?",
+		"Click on the button to reset your": "Cliquez sur le bouton pour redéfinir votre mot de passe de compte",
+		"account password.": "",
+		"Reset": "Redéfinir",
+		"Reset your Password": "Redéfinir votre mot de passe"
+	}
+}

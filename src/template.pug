@@ -1,0 +1,82 @@
+doctype html
+html
+	head
+		meta(charset='utf-8')
+		style(type='text/css')
+			include ../node_modules/foundation-emails/dist/foundation-emails.css
+		style(type='text/css').
+			th.large-12 center {
+				min-width: 524px;
+			}
+			table.header {
+				margin-bottom: 3rem;
+			}
+			table.header {
+				margin: 0 auto;
+				display: table;
+			}
+			table.header img {
+				max-width: 300px;
+			}
+			table.footer {
+				margin-top: 1.5rem;
+			}
+			h3 {
+				margin-top: .5rem;
+			}
+			h5, table.button, img.float-center {
+				margin-top: 1rem;
+			}
+			h2 {
+				font-weight: 700;
+				color: #1b1d1f;
+			}
+			h4 {
+				font-weight: 300;
+			}
+			h4, h5 {
+				color: #1b1d1f;
+			}
+			small {
+				margin-left: .5rem;
+				vertical-align: middle;
+			}
+			table.footer p, table.footer a {
+				color: #1b1d1f;
+				font-weight: 600;
+				margin-bottom: 0;
+				margin-top: 16px;
+				font-size: .9rem;
+			}
+body
+		table.body
+			tr
+				td.float-center(align='center', valign='top')
+					center
+						table.container.float-center(align='center')
+							tr
+								td
+									table.row.header
+										tr
+											th.first.last.large-12.columns
+												if (logo)
+													img.float-center(src=url + logo)
+												h3.text-center=header
+									table.row
+										tr
+											th.first.last.large-12.columns
+												h2.text-center=title
+												h5.text-center=text
+												center
+													table.button.float-center
+														tr
+															td
+																table
+																	tr
+																		td
+																			a(href=redirect + query)= '➜ ' + callToAction
+									table.row.footer
+										tr
+											th.first.last.large-12.columns
+												p.text-center ©#{new Date().getFullYear()} #{app} -
+													a(href=url)= ' ' +  url.split('://')[1]
