@@ -20,22 +20,26 @@ class Mailer {
 		this.domain = options.domain ? options.domain : 'localhost'
 		this.app = options.app ? options.app : 'Application'
 		this.logo = options.logo || null
+		this.color = options.color || '#00bcd4'
 		this.sender = options.user
 		this.i18n = new I18n(options.locales || locales)
-		this.template = data => pug.renderFile(options.template || `${__dirname}/../src/template.pug`, data, null)
+		this.templates = ['user', 'contact', 'notify'].reduce((a, b) => {
+			a[b] = options.templates && options.templates[b]
+				? options.templates[b]
+				: `${__dirname}/../src/${b}.pug`
+			return null
+		}, {})
 	}
 
-    userTransaction(options) {
+	userTransaction(options) {
 		options = {
-			url: `${this.protocol}://${this.domain}`
-			, logo: this.logo
-			, app: this.app
+			...this.configGlobalEmail(options)
 			, query: `?email=${options.user.email}&token=${options.user.token}`
 			, mail: { from: `${this.app} <${this.sender}>`, to: options.user.email }
-			, ...options
+			, template: 'user'
 		}
-        return new Promise((resolve, reject) => {
-            let emailConfig
+		let emailConfig
+		return new Promise((resolve, reject) => {
 			switch (options.user.state) {
 				case 'pending': emailConfig = this.configWelcomeEmail(options)
 					break
@@ -44,44 +48,75 @@ class Mailer {
 				default: return reject(this.i18n.$t('User is not allowed to receive email', options.lang))
 			}
 			return this.buildEmailAndSend(emailConfig)
-                .then(info => resolve(info))
-                .catch(err => reject(err))
-        })
-    }
+				.then(info => resolve(info))
+				.catch(err => reject(err))
+		})
+	}
 
-    configWelcomeEmail(options) {
+	configGlobalEmail(options) {
+		return {
+			...options
+			, url: `${this.protocol}://${this.domain}`
+			, logo: this.logo
+			, color: this.color
+			, app: this.app
+		}
+	}
+
+	configWelcomeEmail(options) {
 		options.mail.subject = `[${this.app}] ${this.i18n.$t('Activate your account', options.lang)}`
-        return {
-			redirect: `${options.url}/login/`
+		return {
+			...options
+			, redirect: '/login/'
 			, header: `${this.i18n.$t('Welcome to', options.lang)} ${this.app}`
 			, title: this.i18n.$t('Congratulations !', options.lang)
 			, text: this.i18n.$t('You are just one click to activate your account.', options.lang)
 			, callToAction: this.i18n.$t('Activate', options.lang)
-			, ...options
 		}
-    }
+	}
 
-    configResetEmail(options) {
-        const endText = `${this.app} ${this.i18n.$t('account password.', options.lang)}`
+	configResetEmail(options) {
+		const endText = `${this.app} ${this.i18n.$t('account password.', options.lang)}`
 		options.mail.subject = `[${this.app}] ${this.i18n.$t('Reset your Password', options.lang)}`
-        return {
-			redirect: `${options.url}/reset/`
+		return {
+			...options
+			, redirect: '/reset/'
 			, header: this.i18n.$t('Password Reset', options.lang)
 			, title: this.i18n.$t('Forgot your password ?', options.lang)
 			, text: `${this.i18n.$t('Click on the button to reset your', options.lang)} ${endText}`
 			, callToAction: this.i18n.$t('Reset', options.lang)
-			, ...options
 		}
-    }
+	}
 
-    buildEmailAndSend(options) {
-        options.mail.html = minify(juice(this.template(options)), { minifyCSS: true })
-        return new Promise((resolve, reject) => {
+	contactEmail(options) {
+		options = {
+			...this.configGlobalEmail(options)
+			, mail: { from: `${this.app} <${this.sender}>`, to: this.sender, replyTo: options.email }
+			, template: 'contact'
+		}
+		return new Promise((resolve, reject) => this.buildEmailAndSend(options)
+            .then(() => {
+				options = {
+					...options
+					, mail: { from: `${this.app} <${this.sender}>`, to: options.email }
+					, template: 'notify'
+				}
+            })
+            .then(info => resolve(info))
+            .catch(err => reject(err)))
+	}
+
+	buildEmailAndSend(options) {
+		options.mail.html = minify(
+			juice(pug.renderFile(this.templates[options.template], options, null))
+			, { minifyCSS: true }
+		)
+		return new Promise((resolve, reject) => {
 			this.transporterAsync.sendMailAsync(options.mail)
 				.then(info => resolve(info))
 				.catch(err => reject(err))
-        })
-    }
+		})
+	}
 }
 
 export default Mailer

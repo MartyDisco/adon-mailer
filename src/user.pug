@@ -1,0 +1,105 @@
+doctype html
+html
+	head
+		meta(charset='utf-8')
+		style(type='text/css')
+			include foundation-emails.css
+		style(type='text/css').
+			.columns {
+				padding: 0 !important;
+			}
+
+			table.header {
+				margin-bottom: 50px;
+			}
+
+			table.header img {
+				margin-top: 20px;
+				margin-bottom: 10px;
+				max-width: 300px;
+				margin-right: auto;
+				margin-left: auto;
+				display: table;
+			}
+
+			table.header h2 {
+				margin-bottom: 20px;
+				color: #fff;
+				font-weight: 600;
+				font-size: 20px;
+			}
+
+			table.content {
+				margin-bottom: 50px;
+			}
+
+			table.content h1 {
+				margin-bottom: 10px;
+				font-weight: 600;
+				font-size: 40px;
+			}
+
+			table.content h3 {
+				margin-bottom: 20px;
+				color: #646464;
+				font-weight: 300;
+				font-size: 24px;
+			}
+
+			table.button {
+				margin-bottom: 0;
+			}
+
+			table.button a {
+				font-size: 22px !important;
+			}
+
+			table.footer p,
+			table.footer a {
+				color: #fff;
+				text-decoration: none;
+				font-weight: 600;
+				font-size: 16px;
+			}
+
+			table.footer p {
+				margin-top: 20px;
+				margin-bottom: 20px;
+			}
+body
+	table.body
+		tr
+			td.float-center(align='center', valign='top')
+				center
+					table.container.float-center(align='center')
+						tr
+							td
+								table.row.header(style=`background-color:${color}`)
+									tr
+										th.first.last.large-12.columns
+											if (logo)
+												img.float-center(src=`${url}${logo}`)
+											h2.text-center=header
+										th.expander
+								table.row.content
+									tr
+										th.first.last.large-12.columns
+											h1.text-center(style=`color:${color}`)=title
+											h3.text-center=text
+											center
+												table.button.float-center
+													tr
+														td
+															table
+																tr
+																	td(style=`background-color:${color};border-color:${color}`)
+																		a(href=`${url}${redirect}${query}`)
+																			| #{`➜ ${callToAction}`}
+										th.expander
+								table.row.footer(style=`background-color:${color}`)
+									tr
+										th.first.last.large-12.columns
+											p.text-center
+												| #{`© ${new Date().getFullYear()} ${app} | `}
+												a(href=url)=url.split('://')[1]
+										th.expander

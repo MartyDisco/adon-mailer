@@ -55,11 +55,13 @@ var Mailer = function () {
 		this.domain = options.domain ? options.domain : 'localhost';
 		this.app = options.app ? options.app : 'Application';
 		this.logo = options.logo || null;
+		this.color = options.color || '#00bcd4';
 		this.sender = options.user;
 		this.i18n = new _adonI18n2.default(options.locales || _locales2.default);
-		this.template = function (data) {
-			return _pug2.default.renderFile(options.template || __dirname + '/../src/template.pug', data, null);
-		};
+		this.templates = ['user', 'contact', 'notify'].reduce(function (a, b) {
+			a[b] = options.templates && options.templates[b] ? options.templates[b] : __dirname + '/../src/' + b + '.pug';
+			return null;
+		}, {});
 	}
 
 	_createClass(Mailer, [{
@@ -67,15 +69,12 @@ var Mailer = function () {
 		value: function userTransaction(options) {
 			var _this = this;
 
-			options = _extends({
-				url: this.protocol + '://' + this.domain,
-				logo: this.logo,
-				app: this.app,
-				query: '?email=' + options.user.email + '&token=' + options.user.token,
-				mail: { from: this.app + ' <' + this.sender + '>', to: options.user.email }
-			}, options);
+			options = _extends({}, this.configGlobalEmail(options), { query: '?email=' + options.user.email + '&token=' + options.user.token,
+				mail: { from: this.app + ' <' + this.sender + '>', to: options.user.email },
+				template: 'user'
+			});
+			var emailConfig = void 0;
 			return new _bluebird2.default(function (resolve, reject) {
-				var emailConfig = void 0;
 				switch (options.user.state) {
 					case 'pending':
 						emailConfig = _this.configWelcomeEmail(options);
@@ -94,38 +93,65 @@ var Mailer = function () {
 			});
 		}
 	}, {
+		key: 'configGlobalEmail',
+		value: function configGlobalEmail(options) {
+			return _extends({}, options, { url: this.protocol + '://' + this.domain,
+				logo: this.logo,
+				color: this.color,
+				app: this.app
+			});
+		}
+	}, {
 		key: 'configWelcomeEmail',
 		value: function configWelcomeEmail(options) {
 			options.mail.subject = '[' + this.app + '] ' + this.i18n.$t('Activate your account', options.lang);
-			return _extends({
-				redirect: options.url + '/login/',
+			return _extends({}, options, { redirect: '/login/',
 				header: this.i18n.$t('Welcome to', options.lang) + ' ' + this.app,
 				title: this.i18n.$t('Congratulations !', options.lang),
 				text: this.i18n.$t('You are just one click to activate your account.', options.lang),
 				callToAction: this.i18n.$t('Activate', options.lang)
-			}, options);
+			});
 		}
 	}, {
 		key: 'configResetEmail',
 		value: function configResetEmail(options) {
 			var endText = this.app + ' ' + this.i18n.$t('account password.', options.lang);
 			options.mail.subject = '[' + this.app + '] ' + this.i18n.$t('Reset your Password', options.lang);
-			return _extends({
-				redirect: options.url + '/reset/',
+			return _extends({}, options, { redirect: '/reset/',
 				header: this.i18n.$t('Password Reset', options.lang),
 				title: this.i18n.$t('Forgot your password ?', options.lang),
 				text: this.i18n.$t('Click on the button to reset your', options.lang) + ' ' + endText,
 				callToAction: this.i18n.$t('Reset', options.lang)
-			}, options);
+			});
+		}
+	}, {
+		key: 'contactEmail',
+		value: function contactEmail(options) {
+			var _this2 = this;
+
+			options = _extends({}, this.configGlobalEmail(options), { mail: { from: this.app + ' <' + this.sender + '>', to: this.sender, replyTo: options.email },
+				template: 'contact'
+			});
+			return new _bluebird2.default(function (resolve, reject) {
+				return _this2.buildEmailAndSend(options).then(function () {
+					options = _extends({}, options, { mail: { from: _this2.app + ' <' + _this2.sender + '>', to: options.email },
+						template: 'notify'
+					});
+				}).then(function (info) {
+					return resolve(info);
+				}).catch(function (err) {
+					return reject(err);
+				});
+			});
 		}
 	}, {
 		key: 'buildEmailAndSend',
 		value: function buildEmailAndSend(options) {
-			var _this2 = this;
+			var _this3 = this;
 
-			options.mail.html = minify((0, _juice2.default)(this.template(options)), { minifyCSS: true });
+			options.mail.html = minify((0, _juice2.default)(_pug2.default.renderFile(this.templates[options.template], options, null)), { minifyCSS: true });
 			return new _bluebird2.default(function (resolve, reject) {
-				_this2.transporterAsync.sendMailAsync(options.mail).then(function (info) {
+				_this3.transporterAsync.sendMailAsync(options.mail).then(function (info) {
 					return resolve(info);
 				}).catch(function (err) {
 					return reject(err);
