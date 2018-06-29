@@ -60,7 +60,7 @@ var Mailer = function () {
 		this.i18n = new _adonI18n2.default(options.locales || _locales2.default);
 		this.templates = ['user', 'contact', 'notify'].reduce(function (a, b) {
 			a[b] = options.templates && options.templates[b] ? options.templates[b] : __dirname + '/../src/' + b + '.pug';
-			return null;
+			return a;
 		}, {});
 	}
 

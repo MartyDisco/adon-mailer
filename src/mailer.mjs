@@ -27,7 +27,7 @@ class Mailer {
 			a[b] = options.templates && options.templates[b]
 				? options.templates[b]
 				: `${__dirname}/../src/${b}.pug`
-			return null
+			return a
 		}, {})
 	}
 
