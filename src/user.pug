@@ -56,7 +56,14 @@ html
 				margin-bottom: 0;
 			}
 
+			table.button th,
+			table.button td {
+				border: 0 !important;
+				border-radius: 50px;
+			}
+
 			table.button a {
+				color: #fff !important;
 				font-size: 22px !important;
 			}
 
@@ -95,8 +102,8 @@ body
 													tr
 														td
 															table
-																tr(style=`border-color:${color}`)
-																	td(style=`background-color:${color};border-color:${color}`)
+																tr
+																	td(style=`background-color:${color}`)
 																		a(href=`${url}${redirect}${query}`, style=`border-color:${color}`)
 																			| #{`➜ ${callToAction}`}
 										th.expander
@@ -105,5 +112,5 @@ body
 										th.first.last.large-12.columns
 											p.text-center(style=`color:${color}`)
 												| #{`© ${new Date().getFullYear()} ${app} | `}
-												a(href=url, style=`color:${color}`)=url.split('://')[1]
+												a(href=url, style=`color:${color}!important`)=url.split('://')[1]
 										th.expander
