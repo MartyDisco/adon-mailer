@@ -1,6 +1,6 @@
 # AdOn Mailer
 
-A simple transactional mailer for user signup and password reset with nodemailer and a custom pug template, promisified with bluebird
+A simple transactional mailer for user signup, password reset and contact with nodemailer and custom pug templates, promisified with bluebird
 
 ## Installing
 
@@ -42,7 +42,8 @@ const mailer = new Mailer({
   , app: // Default to 'Application'
   , logo: // Default to null (ex: 'img/logo.png')
   , locales: // Default to '../src/locales.json' (ES6 import)
-  , template: // Default to '../src/template.pug'
+  , color: // Default to #00bcd4
+  , templates: // Default to { user: '../src/user.pug', contact: '../src/contact.pug' }
 })
 ```
 * Have a look at [adon-i18n](https://github.com/MartyDisco/adon-i18n) for more info about the `locales` object.
@@ -53,8 +54,8 @@ Assuming you got a user database running and some sort of API to handle email ve
 
 ```
 exampleSignupOrResetRoute(req, res) {
-  // Check if user already exist / Generate token / Create user
-    .then(user => mailer.userTransaction({ user, lang: req.body.lang })
+  // Check if user already exist and lang is provided + generate token and/or create user
+    .then(user => mailer.userTransaction({ user, lang: req.body.lang }))
     .then(() => // Send a HTTP response)
     .catch(err => // Treat errors)
 }
@@ -81,18 +82,32 @@ Your application should also handle those GET routes and query parameters as it 
 
 For example, you can trigger the user email verification if both queries parameters `email` and `token` are present, and serve directly your login form if not. You can do the opposite with the reset route (only serving the reset form if parameters are present and matches). Don't forget to regenerate the token after useage, make it strong and/or limit its lifespan.
 
+You can also send direct contact message with sender notification like this :
+
+```
+exampleContactRoute(req, res) {
+  // Check if an email and a message is provided
+    .then(user => mailer.contactEmail({ email: req.body.email, message: req.body.message, lang: req.body.lang })
+    .then(() => // Send a HTTP response)
+    .catch(err => // Treat errors)
+}
+```
+
 ## Behaviors
 
-You can provide your own Pug template in the config object to the class `constructor`. The following properties will be passed and available in it (you can copy the default one in `src/template.pug` for a starting point) :
+You can provide your own Pug templates in the config object to the class `constructor`. The following properties will be passed and available in it (you can copy the default one in `src/user.pug` as starter) :
 
 ```
 url // Protocol and domain
-logo // Path from domain
-header // Text Header
-redirect // Route from domain
-query // Query Parameters
-callToAction // Call-to-action text
-app // Application Title
+logo // Path from root
+app // Application title
+color // Application main color
+header // Email header
+title // Email title
+text // Email content
+redirect // Route from domain (for user template only)
+query // Query parameters (for user template only)
+callToAction // Call-to-action (for user template only)
 ```
 
 You can also force the `lang` object property when calling `userTransaction` instance function to a litteral string (ex: 'fr'), or ommit it (it will then default to 'en'). The english and french locales are already built-in and will be available if you don't provide yours.

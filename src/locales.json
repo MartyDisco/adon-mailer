@@ -11,7 +11,10 @@
 		"Click on the button to reset your": "Click on the button to reset your",
 		"account password.": "account password.",
 		"Reset": "Reset",
-		"Reset your Password": "Reset your Password"
+		"Reset your Password": "Reset your Password",
+		"New message from": "New message from",
+		"You've got a new message": "You've got a new message",
+		"Your message have been sent": "Your message have been sent"
 	},
 	"fr": {
 		"User is not allowed to receive email": "L'utilisateur n'est pas autorisé à recevoir des emails",
@@ -25,6 +28,9 @@
 		"Click on the button to reset your": "Cliquez sur le bouton pour redéfinir votre mot de passe de compte",
 		"account password.": "",
 		"Reset": "Redéfinir",
-		"Reset your Password": "Redéfinir votre mot de passe"
+		"Reset your Password": "Redéfinir votre mot de passe",
+		"New message from": "Nouveau message de",
+		"You've got a new message": "Vous avez un nouveau message",
+		"Your message have been sent": "Votre message a bien été envoyé"
 	}
 }

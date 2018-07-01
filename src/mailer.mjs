@@ -23,7 +23,7 @@ class Mailer {
 		this.color = options.color || '#00bcd4'
 		this.sender = options.user
 		this.i18n = new I18n(options.locales || locales)
-		this.templates = ['user', 'contact', 'notify'].reduce((a, b) => {
+		this.templates = ['user', 'contact'].reduce((a, b) => {
 			a[b] = options.templates && options.templates[b]
 				? options.templates[b]
 				: `${__dirname}/../src/${b}.pug`
@@ -91,18 +91,30 @@ class Mailer {
 	contactEmail(options) {
 		options = {
 			...this.configGlobalEmail(options)
-			, mail: { from: `${this.app} <${this.sender}>`, to: this.sender, replyTo: options.email }
+			, mail: {
+				from: `${this.app} <${this.sender}>`
+				, to: this.sender
+				, replyTo: options.email
+				, subject: `[${this.app}] ${this.i18n.$t('New message from', options.lang)} ${options.email}`
+			}
+			, header: this.i18n.$t('You\'ve got a new message', options.lang)
+			, title: options.email
+			, text: options.message
 			, template: 'contact'
 		}
-		return new Promise((resolve, reject) => this.buildEmailAndSend(options)
-            .then(() => {
-				options = {
-					...options
-					, mail: { from: `${this.app} <${this.sender}>`, to: options.email }
-					, template: 'notify'
+		return new Promise((resolve, reject) => Promise.all([
+			this.buildEmailAndSend(options)
+			, this.buildEmailAndSend({
+				...options
+				, mail: {
+					from: `${this.app} <${this.sender}>`
+					, to: options.email
+					, subject: `[${this.app}] ${this.i18n.$t('Your message have been sent', options.lang)}`
 				}
-            })
-            .then(info => resolve(info))
+				, header: this.i18n.$t('Your message have been sent', options.lang)
+			})
+		])
+            .then(([info]) => resolve(info))
             .catch(err => reject(err)))
 	}
 
