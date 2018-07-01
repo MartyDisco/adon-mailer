@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -58,7 +60,7 @@ var Mailer = function () {
 		this.color = options.color || '#00bcd4';
 		this.sender = options.user;
 		this.i18n = new _adonI18n2.default(options.locales || _locales2.default);
-		this.templates = ['user', 'contact', 'notify'].reduce(function (a, b) {
+		this.templates = ['user', 'contact'].reduce(function (a, b) {
 			a[b] = options.templates && options.templates[b] ? options.templates[b] : __dirname + '/../src/' + b + '.pug';
 			return a;
 		}, {});
@@ -129,15 +131,28 @@ var Mailer = function () {
 		value: function contactEmail(options) {
 			var _this2 = this;
 
-			options = _extends({}, this.configGlobalEmail(options), { mail: { from: this.app + ' <' + this.sender + '>', to: this.sender, replyTo: options.email },
+			options = _extends({}, this.configGlobalEmail(options), { mail: {
+					from: this.app + ' <' + this.sender + '>',
+					to: this.sender,
+					replyTo: options.email,
+					subject: '[' + this.app + '] ' + this.i18n.$t('New message from', options.lang) + ' ' + options.email
+				},
+				header: this.i18n.$t('You\'ve got a new message', options.lang),
+				title: options.email,
+				text: options.message,
 				template: 'contact'
 			});
 			return new _bluebird2.default(function (resolve, reject) {
-				return _this2.buildEmailAndSend(options).then(function () {
-					options = _extends({}, options, { mail: { from: _this2.app + ' <' + _this2.sender + '>', to: options.email },
-						template: 'notify'
-					});
-				}).then(function (info) {
+				return _bluebird2.default.all([_this2.buildEmailAndSend(options), _this2.buildEmailAndSend(_extends({}, options, { mail: {
+						from: _this2.app + ' <' + _this2.sender + '>',
+						to: options.email,
+						subject: '[' + _this2.app + '] ' + _this2.i18n.$t('Your message have been sent', options.lang)
+					},
+					header: _this2.i18n.$t('Your message have been sent', options.lang)
+				}))]).then(function (_ref) {
+					var _ref2 = _slicedToArray(_ref, 1),
+					    info = _ref2[0];
+
 					return resolve(info);
 				}).catch(function (err) {
 					return reject(err);
