@@ -19,8 +19,8 @@
 	},
 	"main": "bin/mailer.js",
 	"scripts": {
-		"transpile": "babel src/mailer.mjs -o bin/mailer.js",
-		"posttranspile": "cpx node_modules/foundation-emails/dist/foundation-emails.css src",
+		"build": "babel src/mailer.mjs -o bin/mailer.js",
+		"postbuild": "cpx node_modules/foundation-emails/dist/foundation-emails.css src",
 		"lint": "eslint . --ext js, mjs, vue || true"
 	},
 	"dependencies": {

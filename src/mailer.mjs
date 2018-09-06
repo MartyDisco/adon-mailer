@@ -93,7 +93,7 @@ class Mailer {
 			...this.configGlobalEmail(options)
 			, mail: {
 				from: `${this.app} <${this.sender}>`
-				, to: this.sender
+				, to: options.to || this.sender
 				, replyTo: options.email
 				, subject: `[${this.app}] ${this.i18n.$t('New message from', options.lang)} ${options.email}`
 			}

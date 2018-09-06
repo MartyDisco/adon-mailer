@@ -93,6 +93,8 @@ exampleContactRoute(req, res) {
 }
 ```
 
+This function also accept an optional `to` property to receive contact emails on a different email address
+
 ## Behaviors
 
 You can provide your own Pug templates in the config object to the class `constructor`. The following properties will be passed and available in it (you can copy the default one in `src/user.pug` as starter) :
