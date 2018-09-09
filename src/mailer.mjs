@@ -128,7 +128,7 @@ class Mailer {
 	// Apply Invite (new User) Email Config
 	configInviteEmail(options) {
 		options.mail.subject = `[${this.app}] ${this.i18n.$t('You have been invited', options.lang)}`
-		const endText = `${options.invite}, first reset your password to login`
+		const endText = `${options.invite}, ${this.i18n.$t('first reset your password to login', options.lang)}`
 		return {
 			...options
 			, redirect: '/login/'
@@ -141,7 +141,7 @@ class Mailer {
 
 	// Apply Subscribe (existent User) Email Config
 	configSubscribeEmail(options) {
-		options.mail.subject = `[${this.app}] ${this.i18n.$t('Join the team', options.lang)}`
+		options.mail.subject = `[${this.app}] ${this.i18n.$t('You have been invited', options.lang)}`
 		return {
 			...options
 			// Add Subscription ID to Query for Transaction

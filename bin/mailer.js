@@ -179,7 +179,7 @@ var Mailer = function () {
 		key: 'configInviteEmail',
 		value: function configInviteEmail(options) {
 			options.mail.subject = '[' + this.app + '] ' + this.i18n.$t('You have been invited', options.lang);
-			var endText = options.invite + ', first reset your password to login';
+			var endText = options.invite + ', ' + this.i18n.$t('first reset your password to login', options.lang);
 			return _extends({}, options, { redirect: '/login/',
 				header: this.i18n.$t('Welcome to', options.lang) + ' ' + this.app,
 				title: this.i18n.$t('Congratulations !', options.lang),
@@ -193,7 +193,7 @@ var Mailer = function () {
 	}, {
 		key: 'configSubscribeEmail',
 		value: function configSubscribeEmail(options) {
-			options.mail.subject = '[' + this.app + '] ' + this.i18n.$t('Join the team', options.lang);
+			options.mail.subject = '[' + this.app + '] ' + this.i18n.$t('You have been invited', options.lang);
 			return _extends({}, options, {
 				// Add Subscription ID to Query for Transaction
 				query: options.query + '&subscription=' + options.subscription,
