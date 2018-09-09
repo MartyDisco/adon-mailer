@@ -1,3 +1,4 @@
+// Dependencies
 import htmlMinifier from 'html-minifier'
 import I18n from 'adon-i18n'
 import juice from 'juice'
@@ -11,18 +12,22 @@ const { minify } = htmlMinifier
 
 class Mailer {
 	constructor(options) {
+		// Node Mailer Config
 		this.transporter = nodeMailer.createTransport({
 			service: options.service
 			, auth: { user: options.user, pass: options.pass }
 		})
 		this.transporterAsync = Promise.promisifyAll(this.transporter)
+		// Locales
+		this.i18n = new I18n(options.locales || locales)
+		// Email Config
+		this.sender = options.user
 		this.protocol = options.protocol ? options.protocol : 'http'
 		this.domain = options.domain ? options.domain : 'localhost'
 		this.app = options.app ? options.app : 'Application'
 		this.logo = options.logo || null
 		this.color = options.color || '#00bcd4'
-		this.sender = options.user
-		this.i18n = new I18n(options.locales || locales)
+		// Email Templates
 		this.templates = ['user', 'contact'].reduce((a, b) => {
 			a[b] = options.templates && options.templates[b]
 				? options.templates[b]
@@ -31,28 +36,7 @@ class Mailer {
 		}, {})
 	}
 
-	userTransaction(options) {
-		options = {
-			...this.configGlobalEmail(options)
-			, query: `?email=${options.user.email}&token=${options.user.token}`
-			, mail: { from: `${this.app} <${this.sender}>`, to: options.user.email }
-			, template: 'user'
-		}
-		let emailConfig
-		return new Promise((resolve, reject) => {
-			switch (options.user.state) {
-				case 'pending': emailConfig = this.configWelcomeEmail(options)
-					break
-				case 'verified': emailConfig = this.configResetEmail(options)
-					break
-				default: return reject(this.i18n.$t('User is not allowed to receive email', options.lang))
-			}
-			return this.buildEmailAndSend(emailConfig)
-				.then(info => resolve(info))
-				.catch(err => reject(err))
-		})
-	}
-
+	// Apply Global Email Config
 	configGlobalEmail(options) {
 		return {
 			...options
@@ -63,7 +47,56 @@ class Mailer {
 		}
 	}
 
+	// Build Email & Send
+	buildEmailAndSend(options) {
+		// Render Template & Optimize
+		options.mail.html = minify(
+			juice(pug.renderFile(this.templates[options.template], options, null))
+			, { minifyCSS: true }
+		)
+		return new Promise((resolve, reject) => {
+			// Send Email
+			this.transporterAsync.sendMailAsync(options.mail)
+				.then(info => resolve(info))
+				.catch(err => reject(err))
+		})
+	}
+
+	// Send Transaction Emails for User Sign up & Password Reset
+	userTransaction(options) {
+		options = {
+			// Global Config
+			...this.configGlobalEmail(options)
+			// Query for Transaction
+			, query: `?email=${options.user.email}&token=${options.user.token}`
+			// Node Mailer Config
+			, mail: { from: `${this.app} <${this.sender}>`, to: options.user.email }
+			// Define Template
+			, template: 'user'
+		}
+		return new Promise((resolve, reject) => {
+			// Reject Banned Users
+			if (options.user.state === 'banned') {
+				return reject(this.i18n.$t('User is not allowed to receive email', options.lang))
+			}
+			// Check User State
+			const emailConfig = options.user.state === 'pending'
+				// Config for Sign up
+				? this.configWelcomeEmail(options)
+				// Config for Password Reset
+				: this.configResetEmail(options)
+			// Build & Send Email
+			return this.buildEmailAndSend(emailConfig)
+				.then(info => resolve(info))
+				.catch(err => reject(err))
+		})
+	}
+
+	// Apply Sign up/Invite Email Config
 	configWelcomeEmail(options) {
+		// Config Invite Email
+		if (options.invite) return this.configInviteEmail(options)
+		// Or Sign up Email
 		options.mail.subject = `[${this.app}] ${this.i18n.$t('Activate your account', options.lang)}`
 		return {
 			...options
@@ -75,9 +108,13 @@ class Mailer {
 		}
 	}
 
+	// Apply Password Reset/Team Subscribe Email Config
 	configResetEmail(options) {
-		const endText = `${this.app} ${this.i18n.$t('account password.', options.lang)}`
+		// Config Subscription Email
+		if (options.invite) return this.configSubscribeEmail(options)
+		// Or Password Reset
 		options.mail.subject = `[${this.app}] ${this.i18n.$t('Reset your Password', options.lang)}`
+		const endText = `${this.app} ${this.i18n.$t('account password.', options.lang)}`
 		return {
 			...options
 			, redirect: '/reset/'
@@ -88,22 +125,58 @@ class Mailer {
 		}
 	}
 
+	// Apply Invite (new User) Email Config
+	configInviteEmail(options) {
+		options.mail.subject = `[${this.app}] ${this.i18n.$t('You have been invited', options.lang)}`
+		const endText = `${options.invite}, first reset your password to login`
+		return {
+			...options
+			, redirect: '/login/'
+			, header: `${this.i18n.$t('Welcome to', options.lang)} ${this.app}`
+			, title: this.i18n.$t('Congratulations !', options.lang)
+			, text: `${this.i18n.$t('You have been invited to a team by', options.lang)} ${endText}`
+			, callToAction: this.i18n.$t('Join', options.lang)
+		}
+	}
+
+	// Apply Subscribe (existent User) Email Config
+	configSubscribeEmail(options) {
+		options.mail.subject = `[${this.app}] ${this.i18n.$t('Join the team', options.lang)}`
+		return {
+			...options
+			// Add Subscription ID to Query for Transaction
+			, query: `${options.query}&subscription=${options.subscription}`
+			, redirect: '/login/'
+			, header: `${this.i18n.$t('Join the team on', options.lang)} ${this.app}`
+			, title: this.i18n.$t('Congratulations !', options.lang)
+			, text: `${this.i18n.$t('You have been invited to a team by', options.lang)} ${options.invite}`
+			, callToAction: this.i18n.$t('Join', options.lang)
+		}
+	}
+
+	// Send Contact Email
 	contactEmail(options) {
 		options = {
+			// Global Config
 			...this.configGlobalEmail(options)
+			// Node Mailer Config
 			, mail: {
 				from: `${this.app} <${this.sender}>`
 				, to: options.to || this.sender
 				, replyTo: options.email
 				, subject: `[${this.app}] ${this.i18n.$t('New message from', options.lang)} ${options.email}`
 			}
+			// Contact Email Config
 			, header: this.i18n.$t('You\'ve got a new message', options.lang)
 			, title: options.email
 			, text: options.message
+			// Define Template
 			, template: 'contact'
 		}
 		return new Promise((resolve, reject) => Promise.all([
+			// Build & Send Contact Email
 			this.buildEmailAndSend(options)
+			// Build & Send Notification Email
 			, this.buildEmailAndSend({
 				...options
 				, mail: {
@@ -116,18 +189,6 @@ class Mailer {
 		])
             .then(([info]) => resolve(info))
             .catch(err => reject(err)))
-	}
-
-	buildEmailAndSend(options) {
-		options.mail.html = minify(
-			juice(pug.renderFile(this.templates[options.template], options, null))
-			, { minifyCSS: true }
-		)
-		return new Promise((resolve, reject) => {
-			this.transporterAsync.sendMailAsync(options.mail)
-				.then(info => resolve(info))
-				.catch(err => reject(err))
-		})
 	}
 }
 

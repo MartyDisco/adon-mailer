@@ -34,21 +34,23 @@ Then provide a configuration object to the `constructor` :
 
 ```
 const mailer = new Mailer({
-  service: // Email service (ex: 'gmail')
-  , user: // Email account
-  , pass: // Service password
+  service: // Required Email service (ex: 'gmail')
+  , user: // Required Email account
+  , pass: // Required Service password
   , protocol: // Default to 'http'
   , domain: // Default to 'localhost'
   , app: // Default to 'Application'
   , logo: // Default to null (ex: 'img/logo.png')
   , locales: // Default to '../src/locales.json' (ES6 import)
   , color: // Default to #00bcd4
-  , templates: // Default to { user: '../src/user.pug', contact: '../src/contact.pug' }
+  , templates: // Default to { user: '../src/user.pug', contact: '../src/contact.pug', team: '../src/team.pug' }
 })
 ```
 * Have a look at [adon-i18n](https://github.com/MartyDisco/adon-i18n) for more info about the `locales` object.
 
 ## Useage
+
+#### Sign up & Password Reset
 
 Assuming you got a user database running and some sort of API to handle email verification and password reset, the only instance function we need is `userTransaction` (in this example, we extracted `lang` from the user browser into the payload sent by the signup form to our route, hence the `req.body.lang` provided by a middleware parser).
 
@@ -63,13 +65,13 @@ exampleSignupOrResetRoute(req, res) {
 
 * Have a look at [adon-encrypt](https://github.com/MartyDisco/adon-encrypt) for a simple way to generate token and HMAC user passwords.
 
-A minimal user object must contain the following properties for the module to operate (the `user.state` property is used to trigger a verification email or a password reset one accordingly).
+A minimal user object must contain the following properties for the module to operate (the `user.state` property is used to trigger a verification email if `'pending'` or a password reset one if `'verified'`).
 
 ```
 const user = {
   token: // A secret string used to verify email and reset password
   , email: // User email
-  , state: // 'pending' or 'verified', anything else is treated as 'banned'
+  , state: // 'pending' or 'verified', deny for 'banned'
 }
 ```
 
@@ -82,7 +84,9 @@ Your application should also handle those GET routes and query parameters as it 
 
 For example, you can trigger the user email verification if both queries parameters `email` and `token` are present, and serve directly your login form if not. You can do the opposite with the reset route (only serving the reset form if parameters are present and matches). Don't forget to regenerate the token after useage, make it strong and/or limit its lifespan.
 
-You can also send direct contact message with sender notification like this :
+#### Contact Email with Sender Notification
+
+Send direct contact message with sender notification like this :
 
 ```
 exampleContactRoute(req, res) {
@@ -94,6 +98,21 @@ exampleContactRoute(req, res) {
 ```
 
 This function also accept an optional `to` property to receive contact emails on a different email address
+
+#### Team Invitation
+
+You can also send invitation to team for new or existent user, adding `invite` property to the args object will trigger this behavior :
+
+```
+mailer.userTransaction({ 
+  user: // User to invite
+  , invite: // Name or email of the team owner
+  , subscription: // Reference added to query for transaction
+  , lang: // Get language from client or force
+})
+```
+
+If the user is newly created and its `user.state` is `'pending'`, the link will behave as a verification link, with the addition of the `subscription` in the query for your application to validate a team change if the user already existed and is `'verified'`
 
 ## Behaviors
 
@@ -107,9 +126,9 @@ color // Application main color
 header // Email header
 title // Email title
 text // Email content
-redirect // Route from domain (for user template only)
-query // Query parameters (for user template only)
-callToAction // Call-to-action (for user template only)
+redirect // Route from domain
+query // Query parameters
+callToAction // Call-to-action
 ```
 
 You can also force the `lang` object property when calling `userTransaction` instance function to a litteral string (ex: 'fr'), or ommit it (it will then default to 'en'). The english and french locales are already built-in and will be available if you don't provide yours.
