@@ -97,6 +97,8 @@ body
 										th.first.last.large-12.columns
 											h1.text-center(style=`color:${color}`)=title
 											h3.text-center=text
+											if (password)
+												h3.text-center=password
 											center
 												table.button.float-center
 													tr

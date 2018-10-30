@@ -108,6 +108,7 @@ mailer.userTransaction({
   user: // User to invite
   , invite: // Name or email of the team owner
   , subscription: // Reference added to query for transaction
+  , password: // For new user
   , lang: // Get language from client or force
 })
 ```

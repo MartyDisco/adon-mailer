@@ -128,13 +128,13 @@ class Mailer {
 	// Apply Invite (new User) Email Config
 	configInviteEmail(options) {
 		options.mail.subject = `[${this.app}] ${this.i18n.$t('You have been invited', options.lang)}`
-		const endText = `${options.invite}, ${this.i18n.$t('first reset your password to login', options.lang)}`
 		return {
 			...options
 			, redirect: '/login/'
 			, header: `${this.i18n.$t('Welcome to', options.lang)} ${this.app}`
 			, title: this.i18n.$t('Congratulations !', options.lang)
-			, text: `${this.i18n.$t('You have been invited to a team by', options.lang)} ${endText}`
+			, text: `${this.i18n.$t('You have been invited to a team by', options.lang)} ${options.invite}`
+			, password: `${this.i18n.$t('Your current password is', options.lang)} ${options.password}`
 			, callToAction: this.i18n.$t('Join', options.lang)
 		}
 	}

@@ -16,10 +16,10 @@
 		"You've got a new message": "You've got a new message",
 		"Your message have been sent": "Your message have been sent",
 		"You have been invited": "You have been invited",
-		"first reset your password to login": "first reset your password to login",
 		"You have been invited to a team by": "You have been invited to a team by",
 		"Join": "Join",
-		"Join the team on": "Join the team on"
+		"Join the team on": "Join the team on",
+		"Your current password is": "Your current password is"
 	},
 	"fr": {
 		"User is not allowed to receive email": "L'utilisateur n'est pas autorisé à recevoir des emails",
@@ -38,9 +38,9 @@
 		"You've got a new message": "Vous avez un nouveau message",
 		"Your message have been sent": "Votre message a bien été envoyé",
 		"You have been invited": "Vous êtes invité",
-		"first reset your password to login": "redéfinissez votre mot de passe pour vous connecter",
 		"You have been invited to a team by": "Vous êtes invité à une équipe par",
 		"Join": "Rejoindre",
-		"Join the team on": "Rejoignez l'équipe sur"
+		"Join the team on": "Rejoignez l'équipe sur",
+		"Your current password is": "Votre mot de passe est"
 	}
 }
