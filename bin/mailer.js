@@ -50,10 +50,21 @@ var Mailer = function () {
 		_classCallCheck(this, Mailer);
 
 		// Node Mailer Config
-		this.transporter = _nodemailer2.default.createTransport({
-			service: options.service,
-			auth: { user: options.user, pass: options.pass }
-		});
+		if (options.service) {
+			this.transporter = _nodemailer2.default.createTransport({
+				service: options.service,
+				auth: { user: options.user, pass: options.pass }
+			});
+		} else {
+			this.transporter = _nodemailer2.default.createTransport({
+				host: options.host,
+				port: options.port,
+				secure: true,
+				pool: true,
+				auth: { user: options.user, pass: options.pass }
+			});
+		}
+
 		this.transporterAsync = _bluebird2.default.promisifyAll(this.transporter);
 		// Locales
 		this.i18n = new _adonI18n2.default(options.locales || _locales2.default);

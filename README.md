@@ -34,7 +34,9 @@ Then provide a configuration object to the `constructor` :
 
 ```
 const mailer = new Mailer({
-  service: // Required Email service (ex: 'gmail')
+  service: // Required Email service Optional. (ex: 'gmail')
+  , host: // Server Hostname (if no service is provided)
+  , port: // Server SSL SMTP port (if no service is provided)
   , user: // Required Email account
   , pass: // Required Service password
   , protocol: // Default to 'http'

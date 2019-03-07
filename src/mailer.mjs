@@ -13,10 +13,21 @@ const { minify } = htmlMinifier
 class Mailer {
 	constructor(options) {
 		// Node Mailer Config
-		this.transporter = nodeMailer.createTransport({
-			service: options.service
-			, auth: { user: options.user, pass: options.pass }
-		})
+		if (options.service) {
+			this.transporter = nodeMailer.createTransport({
+				service: options.service
+				, auth: { user: options.user, pass: options.pass }
+			})
+		} else {
+			this.transporter = nodeMailer.createTransport({
+				host: options.host
+				, port: options.port
+				, secure: true
+				, pool: true
+				, auth: { user: options.user, pass: options.pass }
+			})
+		}
+
 		this.transporterAsync = Promise.promisifyAll(this.transporter)
 		// Locales
 		this.i18n = new I18n(options.locales || locales)
