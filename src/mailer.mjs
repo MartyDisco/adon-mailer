@@ -32,7 +32,7 @@ class Mailer {
 		// Locales
 		this.i18n = new I18n(options.locales || locales)
 		// Email Config
-		this.sender = options.user
+		this.sender = options.sender || options.user
 		this.protocol = options.protocol ? options.protocol : 'http'
 		this.domain = options.domain ? options.domain : 'localhost'
 		this.app = options.app ? options.app : 'Application'

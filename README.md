@@ -39,6 +39,7 @@ const mailer = new Mailer({
   , port: // Server SSL SMTP port (if no service is provided)
   , user: // Required Email account
   , pass: // Required Service password
+  , sender: // Default to user
   , protocol: // Default to 'http'
   , domain: // Default to 'localhost'
   , app: // Default to 'Application'

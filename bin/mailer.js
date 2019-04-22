@@ -69,7 +69,7 @@ var Mailer = function () {
 		// Locales
 		this.i18n = new _adonI18n2.default(options.locales || _locales2.default);
 		// Email Config
-		this.sender = options.user;
+		this.sender = options.sender || options.user;
 		this.protocol = options.protocol ? options.protocol : 'http';
 		this.domain = options.domain ? options.domain : 'localhost';
 		this.app = options.app ? options.app : 'Application';
